@@ -1,0 +1,8 @@
+== baseline_random_forest ==
+accuracy 0.933 | balanced acc 0.389 | macro-F1 0.397
+class       Se     PPV      F1       n
+N        0.980   0.948   0.964   44218
+S        0.056   0.495   0.100    1836
+V        0.902   0.937   0.919    3219
+F        0.005   0.003   0.004     388
+Q        0.000   0.000   0.000       7

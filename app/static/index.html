@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heartbeat classifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23FBEDE8%22/%3E%3Cpath d=%22M2 18h8l3-10 4 18 3-12 2 4h8%22 fill=%22none%22 stroke=%22%231F2233%22 stroke-width=%222.5%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="importmap">
+    { "imports": { "three": "/static/vendor/three.module.js" } }
+  </script>
+</head>
+<body>
+  <header class="bar">
+    <span class="brand">Heartbeat classifier</span>
+
+    <label class="field">
+      <span class="sr-only">Patient</span>
+      <select id="patient-select" aria-label="Patient"></select>
+    </label>
+
+    <div class="controls">
+      <button id="play" class="btn btn-primary" type="button">Play</button>
+      <div class="speed" role="group" aria-label="Playback speed">
+        <button type="button" data-speed="1" aria-pressed="true">1×</button>
+        <button type="button" data-speed="3" aria-pressed="false">3×</button>
+        <button type="button" data-speed="8" aria-pressed="false">8×</button>
+      </div>
+      <button id="next-miss" class="btn" type="button">Next disagreement</button>
+    </div>
+
+    <span id="progress" class="progress" aria-live="polite"></span>
+  </header>
+
+  <main>
+    <section class="stage" aria-label="3D view of heartbeats">
+      <div id="stage-canvas" class="stage-canvas"></div>
+
+      <div class="intro">
+        <h1 id="patient-title">Loading…</h1>
+        <p id="patient-sub">Fetching recordings.</p>
+        <p class="hint">Each ink trace is one heartbeat, coloured by the cardiologist's label. A flag marks a beat where the model disagreed. Drag to look around; click a beat to inspect it.</p>
+        <p id="notice" class="notice" hidden></p>
+      </div>
+
+      <ol id="legend" class="legend" aria-label="Beats seen so far"></ol>
+
+      <aside id="inspector" class="inspector" aria-live="polite">
+        <div class="inspector-head">
+          <h2>Beat <span id="insp-num">–</span></h2>
+          <button id="follow" class="btn btn-small" type="button" hidden>Follow live</button>
+        </div>
+        <canvas id="insp-canvas" width="320" height="150" aria-label="Waveform of the selected beat"></canvas>
+        <dl class="verdict">
+          <div><dt>Cardiologist</dt><dd id="insp-true">–</dd></div>
+          <div><dt>Model</dt><dd id="insp-pred">–</dd></div>
+          <div><dt>Since last beat</dt><dd id="insp-rr">–</dd></div>
+        </dl>
+        <ul id="insp-proba" class="proba" aria-label="Model confidence per class"></ul>
+      </aside>
+    </section>
+
+    <section class="results" aria-labelledby="results-title">
+      <div class="results-inner">
+        <h2 id="results-title">How the model does on patients it has never seen</h2>
+        <p class="lede">Accuracy hides the hard part: nine in ten beats are normal. These numbers are per beat type, measured on 22 patients kept out of training.</p>
+
+        <div id="results-empty" class="empty" hidden>
+          <p>No results yet. Run <code>python -m src.baseline</code>, <code>python -m src.leakage_demo</code> and <code>python -m src.train</code>, then refresh this page.</p>
+        </div>
+
+        <div id="results-body" hidden>
+          <div class="tabs" role="tablist" id="model-tabs"></div>
+          <div class="results-grid">
+            <div>
+              <table class="metrics">
+                <caption>Per beat type</caption>
+                <thead><tr><th scope="col">Type</th><th scope="col">Caught</th><th scope="col">Right when flagged</th><th scope="col">F1</th><th scope="col">Beats</th></tr></thead>
+                <tbody id="metrics-body"></tbody>
+              </table>
+              <p class="footnote"><strong>Caught</strong> (sensitivity): of the real beats of this type, the share the model found. <strong>Right when flagged</strong> (precision): of the beats the model gave this type, the share that were correct.</p>
+              <p id="headline-metric" class="headline-metric"></p>
+            </div>
+            <figure class="confusion">
+              <div id="confusion" class="confusion-grid" role="img"></div>
+              <figcaption>Rows are the cardiologist's label, columns the model's. A strong diagonal means the model agrees.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div id="leakage" class="leakage" hidden>
+          <h2>Why test patients are kept separate</h2>
+          <p class="lede">Shuffle beats at random and the same patient ends up in training and testing. The model then recognises the person, not the arrhythmia. Same model, two ways of splitting:</p>
+          <div id="leakage-bars" class="leakage-bars"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Data: MIT-BIH Arrhythmia Database (Moody &amp; Mark, PhysioNet). Inter-patient split after de Chazal et al., 2004.</p>
+  </footer>
+
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Setup environment (.venv)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\setup.bat",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run full pipeline",
+            "type": "shell",
+            "command": ".venv\\Scripts\\python.exe -m src.data; .venv\\Scripts\\python.exe -m src.baseline; .venv\\Scripts\\python.exe -m src.leakage_demo; .venv\\Scripts\\python.exe -m src.train",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": ".venv\\Scripts\\python.exe -m pytest -q",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Launch 3D dashboard",
+            "type": "shell",
+            "command": ".venv\\Scripts\\python.exe -m app.server",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "isBackground": true
+        }
+    ]
+}

@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "1. Download data + extract beats",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.data",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "2. Baselines (LogReg + Random Forest)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.baseline",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "3. Leakage demo (random vs patient split)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.leakage_demo",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "4. Train 1D CNN",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.train",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "4b. Train 1D CNN (quick, 3 epochs)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.train",
+            "args": [
+                "--epochs",
+                "3"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "5. Launch 3D dashboard",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "app.server",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
